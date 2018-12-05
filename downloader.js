@@ -9,8 +9,9 @@ async function _download(videos) {
   }
 
   for (let key of keys) {
-    const { id, title, video_url } = videos[key]
+    let { id, title, video_url } = videos[key]
     if (video_url == null) continue
+    title = title ? title.replace(/\n|\s|\//g, '') : title
     let filePath = `${folder}/${title}_${id}.mp4`
     if (!fs.existsSync(filePath)) {
       try {
@@ -19,10 +20,7 @@ async function _download(videos) {
         fs.writeFileSync(filePath, data)
         console.log(`download ${filePath} success`)
       } catch (error) {
-        if (error.message.indexOf('Response code 403 (Forbidden)') != -1) {
-          console.log(`${video_url} 403`)
-          continue
-        }
+        console.log(`${video_url} ${error}`)
       }
     } else {
       console.log(`${filePath} exist skip.`)
